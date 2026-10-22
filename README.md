@@ -1,4 +1,4 @@
-# 🚀 Orquestrador de Pedidos (Backend API)
+# 🚀 Order Orchestrator (Backend API)
 
 <p align="left">
 
@@ -16,62 +16,58 @@
 
 </p>
 
-API desenvolvida em NestJS e TypeScript para um teste de `desenvolvedor backend pleno`.
-Propósito: orquestração de pedidos, projetada com foco em resiliência, consistência de dados, prevenção de duplicidade (idempotência) e suporte a processamento assíncrono.
+API developed in NestJS and TypeScript for a `senior backend developer` test.
+Purpose: order orchestration, designed with a focus on resilience, data consistency, duplicate prevention (idempotency), and support for asynchronous processing.
 
-URL do teste: https://github.com/buzzmates/desafio-backend-pleno
+Test URL: https://github.com/buzzmates/desafio-backend-pleno
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 🛠️ Technologies Used
 
-* **NestJS** (Framework Node.js progressivo)
+* **NestJS** (Progressive Node.js framework)
 * **TypeScript** (ES Modules)
-* **TypeORM** (ORM para persistência de dados)
-* **SQLite** (Banco de dados relacional leve baseado em arquivo)
-* **Class-Validator / Class-Transformer** (Validação rigorosa de DTOs)
-* **BullMQ & Redis** (Gerenciamento de filas e processamento assíncrono)
+* **TypeORM** (ORM for data persistence)
+* **SQLite** (Lightweight file-based relational database)
+* **Class-Validator / Class-Transformer** (Strict DTO validation)
+* **BullMQ & Redis** (Queue management and asynchronous processing)
 
 ---
 
-## 📋 Arquitetura e Decisões de Design
+## 📋 Architecture and Design Decisions
 
-1. **Idempotência Rigorosa:** 
+1. **Strict Idempotency:**
 
-   O sistema valida chaves únicas de transação (`idempotency_key` e `order_id`) antes de persistir novos registros. Caso um webhook seja disparado múltiplas vezes pela plataforma de origem, a API identifica o registro pré-existente e evita duplicações ou efeitos colaterais indesejados.
-
-
-
-2. **Modelagem de Dados Relacional (TypeORM):**
-
-   * Tabela `orders`: Armazena o cabeçalho do pedido, dados do cliente, moeda, valor total e status do ciclo de vida.
-
-   * Tabela `order_items`: Armazena os itens individuais vinculados via chave estrangeira (`@ManyToOne` com exclusão em cascata).
-
-   * Utilização de SQLite para persistência leve em arquivo (`database.sqlite`), ideal para ambientes locais e homologação rápida.
+   The system validates unique transaction keys (`idempotency_key` and `order_id`) before persisting new records. If a webhook is triggered multiple times by the source platform, the API identifies the pre-existing record and prevents duplicates or unwanted side effects.
 
 
+2. **Relational Data Modeling (TypeORM):**
 
-3. **Validação de Entrada:**
+   * `orders` table: Stores the order header, customer data, currency, total value, and lifecycle status.
 
-   Implementação de DTOs fortemente tipados utilizando `class-validator` e `class-transformer` na camada de borda (Controllers), garantindo que payloads malformados ou incompletos sejam rejeitados instantaneamente com `400 Bad Request`.
+   * `order_items` table: Stores individual items linked via a foreign key (`@ManyToOne` with cascade deletion).
+
+   * SQLite is used for lightweight file-based persistence (`database.sqlite`), ideal for local environments and quick staging.
+
+
+3. **Input Validation:**
+
+   Implementation of strongly typed DTOs using `class-validator` and `class-transformer` at the edge layer (Controllers), ensuring malformed or incomplete payloads are rejected immediately with `400 Bad Request`.
 
 ---
 
+## ⚙️ Prerequisites and Installation
+
+### Prerequisites
+
+* **Node.js** (Version 18.x or higher recommended)
+
+* **npm** (Standard package manager)
 
 
-## ⚙️ Pré-requisitos e Instalação
+### Local Setup Steps
 
-### Pré-requisitos
-
-* **Node.js** (Versão 18.x ou superior recomendada)
-
-* **npm** (Gerenciador de pacotes padrão)
-
-
-### Passo a Passo para Configuração Local
-
-1. **Navegue até a pasta do projeto:**
+1. **Navigate to the project folder:**
 
    ```bash
 
@@ -79,7 +75,7 @@ URL do teste: https://github.com/buzzmates/desafio-backend-pleno
 
    ```
 
-2. **Instale as dependências do projeto:**
+2. **Install the project dependencies:**
 
    ```bash
 
@@ -87,7 +83,7 @@ URL do teste: https://github.com/buzzmates/desafio-backend-pleno
 
    ```
 
-3. **Inicie a aplicação em modo de desenvolvimento (com hot-reload):**
+3. **Start the application in development mode (with hot reload):**
 
    ```bash
 
@@ -95,28 +91,26 @@ URL do teste: https://github.com/buzzmates/desafio-backend-pleno
 
    ```
 
-A aplicação estará acessível por padrão em: `http://localhost:3000`
+The application will be available by default at: `http://localhost:3000`
 
 ---
 
-## 📌 Guia de Uso e Endpoints da API
+## 📌 Usage Guide and API Endpoints
 
 
+### 1. Receive Order Webhook (Create Order)
 
-### 1. Receber Webhook de Pedido (Criar Pedido)
-
-Endpoint responsável por recepcionar os dados de um novo pedido externo, validar regras de negócio, calcular totais e garantir a idempotência.
-
+Endpoint responsible for receiving data from a new external order, validating business rules, calculating totals, and ensuring idempotency.
 
 
-* **Método:** `POST`
+* **Method:** `POST`
 
-* **Rota:** `/webhooks/orders`
+* **Route:** `/webhooks/orders`
 
 * **Headers:** `Content-Type: application/json`
 
 
-**Payload de Exemplo (JSON):**
+**Example Payload (JSON):**
 
 ```json
 
@@ -154,7 +148,7 @@ Endpoint responsável por recepcionar os dados de um novo pedido externo, valida
 
 ```
 
-**Exemplo de uso via Httpie:**
+**Example usage via Httpie:**
 
 ```bash
 
@@ -175,21 +169,19 @@ http POST localhost:3000/webhooks/orders \
 
 
 
-### 2. Listar Todos os Pedidos
+### 2. List All Orders
 
-Permite a listagem geral dos pedidos salvos na base de dados, com suporte a filtros opcionais por status.
-
-
-
-* **Método:** `GET`
-
-* **Rota:** `/orders`
-
-* **Query Params Opcionais:** `?status=RECEIVED`
+Allows listing all orders saved in the database, with optional filters by status.
 
 
+* **Method:** `GET`
 
-**Exemplo de uso via Httpie:**
+* **Route:** `/orders`
+
+* **Optional Query Params:** `?status=RECEIVED`
+
+
+**Example usage via Httpie:**
 
 ```bash
 
@@ -200,19 +192,18 @@ http GET localhost:3000/orders
 ---
 
 
-### 3. Consultar Pedido Específico por ID
+### 3. Retrieve a Specific Order by ID
 
-Retorna os detalhes completos de um pedido específico, incluindo o relacionamento populado com todos os itens associados.
+Returns the full details of a specific order, including the populated relationship with all associated items.
 
-* **Método:** `GET`
+* **Method:** `GET`
 
-* **Rota:** `/orders/:id`
+* **Route:** `/orders/:id`
 
-* *Nota: Aceita tanto o UUID interno gerado pelo banco quanto o `order_id` externo.*
+* *Note: Accepts either the internal UUID generated by the database or the external `order_id`.*
 
 
-
-**Exemplo de uso via Httpie:**
+**Example usage via Httpie:**
 
 ```bash
 
@@ -222,30 +213,30 @@ http GET localhost:3000/orders/ext-123
 
 ---
 
-## 🔄 Ciclo de Vida dos Pedidos
+## 🔄 Order Lifecycle
 
-Os pedidos transitam pelos seguintes estados operacionais dentro do orquestrador:
+Orders move through the following operational states within the orchestrator:
 
-1. **`RECEIVED`**: O pedido chegou via webhook, passou pelas validações estruturais, foi verificado quanto à idempotência e gravado com sucesso no banco de dados.
+1. **`RECEIVED`**: The order arrived via webhook, passed structural validation, was checked for idempotency, and was successfully stored in the database.
 
-2. **`PROCESSING`**: O pedido foi capturado pelo worker de mensageria para envio ou processamento integrado com serviços externos.
+2. **`PROCESSING`**: The order was picked up by the messaging worker for sending or processing through external services.
 
-3. **`COMPLETED`**: O fluxo assíncrono externo foi finalizado com sucesso.
+3. **`COMPLETED`**: The external asynchronous flow was completed successfully.
 
-4. **`FAILED`**: Ocorreram falhas críticas após esgotar as tentativas de reprocessamento (Retry/Backoff).
+4. **`FAILED`**: Critical failures occurred after exhausting retry/backoff attempts.
 
 ---
 
-## 🛠️ Solução de Problemas (Troubleshooting)
+## 🛠️ Troubleshooting
 
 
-* **Erro 500 (EntityMetadataNotFoundError):** Certifique-se de que o arquivo `app.module.ts` possui a propriedade `autoLoadEntities: true` configurada no `TypeOrmModule.forRoot` e que as entidades estão devidamente injetadas via `TypeOrmModule.forFeature` no módulo correspondente.
+* **500 Error (EntityMetadataNotFoundError):** Make sure the `app.module.ts` file contains the `autoLoadEntities: true` property configured in `TypeOrmModule.forRoot`, and that the entities are properly injected via `TypeOrmModule.forFeature` in the corresponding module.
 
-* **Conflito de Portas:** Se a porta `3000` estiver em uso por outro processo corporativo, altere a porta de execução no arquivo `src/main.ts` através do método `app.listen(PORTA)`.
+* **Port Conflict:** If port `3000` is already in use by another process, change the execution port in `src/main.ts` through the `app.listen(PORTA)` method.
 
-## 👨‍💻 Autor
+## 👨‍💻 Author
 
-Desenvolvido por **Rafael Cordeiro de Almeida dos Santos**.<br>
+Developed by **Rafael Cordeiro de Almeida dos Santos**.<br>
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/rafael-cordeiro-de-almeida-dos-santos/)
 
