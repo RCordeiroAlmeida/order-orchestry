@@ -1,18 +1,20 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BullModule } from '@nestjs/bull';
 import { OrdersController } from './orders.controller.js';
 import { OrdersService } from './orders.service.js';
-<<<<<<< HEAD
-import { OrderItem } from './entities/order-item.entity.js';
 import { Order } from './entities/order.entity.js';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { OrderItem } from './entities/order-item.entity.js';
+import { OrderProcessor } from './order.processor.js'; // <-- Certifique-se que importou
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, OrderItem])],
-=======
-
-@Module({
->>>>>>> b37f7d0703a18fc5628a260779c78ff87d45ebf7
+  imports: [
+    TypeOrmModule.forFeature([Order, OrderItem]),
+    BullModule.registerQueue({
+      name: 'orders', 
+    }),
+  ],
   controllers: [OrdersController],
-  providers: [OrdersService]
+  providers: [OrdersService, OrderProcessor], 
 })
 export class OrdersModule {}
